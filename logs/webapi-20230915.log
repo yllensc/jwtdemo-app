@@ -1,0 +1,627 @@
+[2023-09-15 15:00:49.039 -05:00 INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE DATABASE `jwtdemo`;
+[2023-09-15 15:00:49.181 -05:00 INF] Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `__EFMigrationsHistory` (
+    `MigrationId` varchar(150) CHARACTER SET utf8mb4 NOT NULL,
+    `ProductVersion` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK___EFMigrationsHistory` PRIMARY KEY (`MigrationId`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:00:49.199 -05:00 INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='jwtdemo' AND TABLE_NAME='__EFMigrationsHistory';
+[2023-09-15 15:00:49.206 -05:00 INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `MigrationId`, `ProductVersion`
+FROM `__EFMigrationsHistory`
+ORDER BY `MigrationId`;
+[2023-09-15 15:00:49.224 -05:00 INF] Applying migration '20230911033824_InitialCreateMig'.
+[2023-09-15 15:00:49.261 -05:00 INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER DATABASE CHARACTER SET utf8mb4;
+[2023-09-15 15:00:49.273 -05:00 INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `rol` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `rolName` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_rol` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:00:49.286 -05:00 INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `user` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `username` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
+    `email` varchar(100) CHARACTER SET utf8mb4 NOT NULL,
+    `password` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_user` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:00:49.305 -05:00 INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `userRol` (
+    `UsuarioId` int NOT NULL,
+    `RolId` int NOT NULL,
+    CONSTRAINT `PK_userRol` PRIMARY KEY (`UsuarioId`, `RolId`),
+    CONSTRAINT `FK_userRol_rol_RolId` FOREIGN KEY (`RolId`) REFERENCES `rol` (`Id`) ON DELETE CASCADE,
+    CONSTRAINT `FK_userRol_user_UsuarioId` FOREIGN KEY (`UsuarioId`) REFERENCES `user` (`Id`) ON DELETE CASCADE
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:00:49.321 -05:00 INF] Executed DbCommand (16ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX `IX_userRol_RolId` ON `userRol` (`RolId`);
+[2023-09-15 15:00:49.324 -05:00 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20230911033824_InitialCreateMig', '7.0.10');
+[2023-09-15 15:00:49.325 -05:00 INF] Applying migration '20230911231428_InitialCreateMig2'.
+[2023-09-15 15:00:49.352 -05:00 INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `RefreshToken` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `UserId` int NOT NULL,
+    `Token` longtext CHARACTER SET utf8mb4 NULL,
+    `Expires` datetime(6) NOT NULL,
+    `Created` datetime(6) NOT NULL,
+    `Revoked` datetime(6) NULL,
+    CONSTRAINT `PK_RefreshToken` PRIMARY KEY (`Id`),
+    CONSTRAINT `FK_RefreshToken_user_UserId` FOREIGN KEY (`UserId`) REFERENCES `user` (`Id`) ON DELETE CASCADE
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:00:49.365 -05:00 INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX `IX_RefreshToken_UserId` ON `RefreshToken` (`UserId`);
+[2023-09-15 15:00:49.368 -05:00 INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20230911231428_InitialCreateMig2', '7.0.10');
+[2023-09-15 15:00:49.368 -05:00 INF] Applying migration '20230915195845_secondMigration'.
+[2023-09-15 15:00:49.395 -05:00 INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `Brand` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `BrandName` varchar(70) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_Brand` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:00:49.407 -05:00 INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `Category` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `CategoryName` varchar(70) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_Category` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:00:49.426 -05:00 INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `Product` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `ProductName` varchar(70) CHARACTER SET utf8mb4 NOT NULL,
+    `Price` decimal(65,30) NOT NULL,
+    `CreatedDate` datetime(6) NOT NULL,
+    `IdBrand` int NOT NULL,
+    `IdCategory` int NOT NULL,
+    CONSTRAINT `PK_Product` PRIMARY KEY (`Id`),
+    CONSTRAINT `FK_Product_Brand_IdBrand` FOREIGN KEY (`IdBrand`) REFERENCES `Brand` (`Id`) ON DELETE CASCADE,
+    CONSTRAINT `FK_Product_Category_IdCategory` FOREIGN KEY (`IdCategory`) REFERENCES `Category` (`Id`) ON DELETE CASCADE
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:00:49.446 -05:00 INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX `IX_Brand_BrandName` ON `Brand` (`BrandName`);
+[2023-09-15 15:00:49.462 -05:00 INF] Executed DbCommand (16ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX `IX_Category_CategoryName` ON `Category` (`CategoryName`);
+[2023-09-15 15:00:49.475 -05:00 INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX `IX_Product_IdBrand` ON `Product` (`IdBrand`);
+[2023-09-15 15:00:49.491 -05:00 INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX `IX_Product_IdCategory` ON `Product` (`IdCategory`);
+[2023-09-15 15:00:49.511 -05:00 INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX `IX_Product_ProductName` ON `Product` (`ProductName`);
+[2023-09-15 15:00:49.514 -05:00 INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20230915195845_secondMigration', '7.0.10');
+[2023-09-15 15:05:40.830 -05:00 INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE DATABASE `jwtdemo`;
+[2023-09-15 15:05:40.948 -05:00 INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `__EFMigrationsHistory` (
+    `MigrationId` varchar(150) CHARACTER SET utf8mb4 NOT NULL,
+    `ProductVersion` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK___EFMigrationsHistory` PRIMARY KEY (`MigrationId`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:05:40.964 -05:00 INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='jwtdemo' AND TABLE_NAME='__EFMigrationsHistory';
+[2023-09-15 15:05:40.970 -05:00 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `MigrationId`, `ProductVersion`
+FROM `__EFMigrationsHistory`
+ORDER BY `MigrationId`;
+[2023-09-15 15:05:40.988 -05:00 INF] Applying migration '20230911033824_InitialCreateMig'.
+[2023-09-15 15:05:41.022 -05:00 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER DATABASE CHARACTER SET utf8mb4;
+[2023-09-15 15:05:41.033 -05:00 INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `rol` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `rolName` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_rol` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:05:41.044 -05:00 INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `user` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `username` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
+    `email` varchar(100) CHARACTER SET utf8mb4 NOT NULL,
+    `password` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_user` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:05:41.063 -05:00 INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `userRol` (
+    `UsuarioId` int NOT NULL,
+    `RolId` int NOT NULL,
+    CONSTRAINT `PK_userRol` PRIMARY KEY (`UsuarioId`, `RolId`),
+    CONSTRAINT `FK_userRol_rol_RolId` FOREIGN KEY (`RolId`) REFERENCES `rol` (`Id`) ON DELETE CASCADE,
+    CONSTRAINT `FK_userRol_user_UsuarioId` FOREIGN KEY (`UsuarioId`) REFERENCES `user` (`Id`) ON DELETE CASCADE
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:05:41.076 -05:00 INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX `IX_userRol_RolId` ON `userRol` (`RolId`);
+[2023-09-15 15:05:41.078 -05:00 INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20230911033824_InitialCreateMig', '7.0.10');
+[2023-09-15 15:05:41.079 -05:00 INF] Applying migration '20230911231428_InitialCreateMig2'.
+[2023-09-15 15:05:41.107 -05:00 INF] Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `RefreshToken` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `UserId` int NOT NULL,
+    `Token` longtext CHARACTER SET utf8mb4 NULL,
+    `Expires` datetime(6) NOT NULL,
+    `Created` datetime(6) NOT NULL,
+    `Revoked` datetime(6) NULL,
+    CONSTRAINT `PK_RefreshToken` PRIMARY KEY (`Id`),
+    CONSTRAINT `FK_RefreshToken_user_UserId` FOREIGN KEY (`UserId`) REFERENCES `user` (`Id`) ON DELETE CASCADE
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:05:41.119 -05:00 INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX `IX_RefreshToken_UserId` ON `RefreshToken` (`UserId`);
+[2023-09-15 15:05:41.123 -05:00 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20230911231428_InitialCreateMig2', '7.0.10');
+[2023-09-15 15:05:41.123 -05:00 INF] Applying migration '20230915200532_secondMigration'.
+[2023-09-15 15:05:41.147 -05:00 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER DATABASE CHARACTER SET utf8mb4;
+[2023-09-15 15:05:41.159 -05:00 INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `Brand` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `BrandName` varchar(70) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_Brand` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:05:41.172 -05:00 INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `Category` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `CategoryName` varchar(70) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_Category` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:05:41.181 -05:00 ERR] Failed executing DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `rol` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `rolName` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_rol` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:08:46.165 -05:00 INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE DATABASE `jwtdemo`;
+[2023-09-15 15:08:46.285 -05:00 INF] Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `__EFMigrationsHistory` (
+    `MigrationId` varchar(150) CHARACTER SET utf8mb4 NOT NULL,
+    `ProductVersion` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK___EFMigrationsHistory` PRIMARY KEY (`MigrationId`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:08:46.307 -05:00 INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='jwtdemo' AND TABLE_NAME='__EFMigrationsHistory';
+[2023-09-15 15:08:46.312 -05:00 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `MigrationId`, `ProductVersion`
+FROM `__EFMigrationsHistory`
+ORDER BY `MigrationId`;
+[2023-09-15 15:08:46.329 -05:00 INF] Applying migration '20230915200836_secondMigration'.
+[2023-09-15 15:08:46.378 -05:00 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER DATABASE CHARACTER SET utf8mb4;
+[2023-09-15 15:08:46.390 -05:00 INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `Brand` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `BrandName` varchar(70) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_Brand` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:08:46.402 -05:00 INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `Category` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `CategoryName` varchar(70) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_Category` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:08:46.414 -05:00 INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `rol` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `rolName` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_rol` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:08:46.427 -05:00 INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `user` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `username` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
+    `email` varchar(100) CHARACTER SET utf8mb4 NOT NULL,
+    `password` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_user` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:08:46.446 -05:00 INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `Product` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `ProductName` varchar(70) CHARACTER SET utf8mb4 NOT NULL,
+    `Price` decimal(65,30) NOT NULL,
+    `CreatedDate` datetime(6) NOT NULL,
+    `IdBrand` int NOT NULL,
+    `IdCategory` int NOT NULL,
+    CONSTRAINT `PK_Product` PRIMARY KEY (`Id`),
+    CONSTRAINT `FK_Product_Brand_IdBrand` FOREIGN KEY (`IdBrand`) REFERENCES `Brand` (`Id`) ON DELETE CASCADE,
+    CONSTRAINT `FK_Product_Category_IdCategory` FOREIGN KEY (`IdCategory`) REFERENCES `Category` (`Id`) ON DELETE CASCADE
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:08:46.462 -05:00 INF] Executed DbCommand (16ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `RefreshToken` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `UserId` int NOT NULL,
+    `Token` longtext CHARACTER SET utf8mb4 NULL,
+    `Expires` datetime(6) NOT NULL,
+    `Created` datetime(6) NOT NULL,
+    `Revoked` datetime(6) NULL,
+    CONSTRAINT `PK_RefreshToken` PRIMARY KEY (`Id`),
+    CONSTRAINT `FK_RefreshToken_user_UserId` FOREIGN KEY (`UserId`) REFERENCES `user` (`Id`) ON DELETE CASCADE
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:08:46.482 -05:00 INF] Executed DbCommand (20ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `userRol` (
+    `UsuarioId` int NOT NULL,
+    `RolId` int NOT NULL,
+    CONSTRAINT `PK_userRol` PRIMARY KEY (`UsuarioId`, `RolId`),
+    CONSTRAINT `FK_userRol_rol_RolId` FOREIGN KEY (`RolId`) REFERENCES `rol` (`Id`) ON DELETE CASCADE,
+    CONSTRAINT `FK_userRol_user_UsuarioId` FOREIGN KEY (`UsuarioId`) REFERENCES `user` (`Id`) ON DELETE CASCADE
+) CHARACTER SET=utf8mb4;
+[2023-09-15 15:08:46.500 -05:00 INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX `IX_Brand_BrandName` ON `Brand` (`BrandName`);
+[2023-09-15 15:08:46.518 -05:00 INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX `IX_Category_CategoryName` ON `Category` (`CategoryName`);
+[2023-09-15 15:08:46.531 -05:00 INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX `IX_Product_IdBrand` ON `Product` (`IdBrand`);
+[2023-09-15 15:08:46.541 -05:00 INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX `IX_Product_IdCategory` ON `Product` (`IdCategory`);
+[2023-09-15 15:08:46.555 -05:00 INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX `IX_Product_ProductName` ON `Product` (`ProductName`);
+[2023-09-15 15:08:46.580 -05:00 INF] Executed DbCommand (24ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX `IX_RefreshToken_UserId` ON `RefreshToken` (`UserId`);
+[2023-09-15 15:08:46.601 -05:00 INF] Executed DbCommand (21ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX `IX_userRol_RolId` ON `userRol` (`RolId`);
+[2023-09-15 15:08:46.604 -05:00 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20230915200836_secondMigration', '7.0.10');
+[2023-09-15 16:31:07.885 -05:00 INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE DATABASE `jwtdemo`;
+[2023-09-15 16:31:08.042 -05:00 INF] Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `__EFMigrationsHistory` (
+    `MigrationId` varchar(150) CHARACTER SET utf8mb4 NOT NULL,
+    `ProductVersion` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK___EFMigrationsHistory` PRIMARY KEY (`MigrationId`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 16:31:08.061 -05:00 INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='jwtdemo' AND TABLE_NAME='__EFMigrationsHistory';
+[2023-09-15 16:31:08.070 -05:00 INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `MigrationId`, `ProductVersion`
+FROM `__EFMigrationsHistory`
+ORDER BY `MigrationId`;
+[2023-09-15 16:31:08.098 -05:00 INF] Applying migration '20230915213057_secondMigration'.
+[2023-09-15 16:31:08.151 -05:00 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER DATABASE CHARACTER SET utf8mb4;
+[2023-09-15 16:31:08.165 -05:00 INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `Brand` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `BrandName` varchar(70) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_Brand` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 16:31:08.180 -05:00 INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `Category` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `CategoryName` varchar(70) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_Category` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 16:31:08.194 -05:00 INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `rol` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `rolName` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_rol` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 16:31:08.211 -05:00 INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `user` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `username` varchar(50) CHARACTER SET utf8mb4 NOT NULL,
+    `email` varchar(100) CHARACTER SET utf8mb4 NOT NULL,
+    `password` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
+    CONSTRAINT `PK_user` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+[2023-09-15 16:31:08.234 -05:00 INF] Executed DbCommand (22ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `Product` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `ProductName` varchar(70) CHARACTER SET utf8mb4 NOT NULL,
+    `Price` decimal(65,30) NOT NULL,
+    `CreatedDate` datetime(6) NOT NULL,
+    `IdBrand` int NOT NULL,
+    `IdCategory` int NOT NULL,
+    CONSTRAINT `PK_Product` PRIMARY KEY (`Id`),
+    CONSTRAINT `FK_Product_Brand_IdBrand` FOREIGN KEY (`IdBrand`) REFERENCES `Brand` (`Id`) ON DELETE CASCADE,
+    CONSTRAINT `FK_Product_Category_IdCategory` FOREIGN KEY (`IdCategory`) REFERENCES `Category` (`Id`) ON DELETE CASCADE
+) CHARACTER SET=utf8mb4;
+[2023-09-15 16:31:08.251 -05:00 INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `RefreshToken` (
+    `Id` int NOT NULL AUTO_INCREMENT,
+    `UserId` int NOT NULL,
+    `Token` longtext CHARACTER SET utf8mb4 NULL,
+    `Expires` datetime(6) NOT NULL,
+    `Created` datetime(6) NOT NULL,
+    `Revoked` datetime(6) NULL,
+    CONSTRAINT `PK_RefreshToken` PRIMARY KEY (`Id`),
+    CONSTRAINT `FK_RefreshToken_user_UserId` FOREIGN KEY (`UserId`) REFERENCES `user` (`Id`) ON DELETE CASCADE
+) CHARACTER SET=utf8mb4;
+[2023-09-15 16:31:08.274 -05:00 INF] Executed DbCommand (22ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE `userRol` (
+    `UsuarioId` int NOT NULL,
+    `RolId` int NOT NULL,
+    CONSTRAINT `PK_userRol` PRIMARY KEY (`UsuarioId`, `RolId`),
+    CONSTRAINT `FK_userRol_rol_RolId` FOREIGN KEY (`RolId`) REFERENCES `rol` (`Id`) ON DELETE CASCADE,
+    CONSTRAINT `FK_userRol_user_UsuarioId` FOREIGN KEY (`UsuarioId`) REFERENCES `user` (`Id`) ON DELETE CASCADE
+) CHARACTER SET=utf8mb4;
+[2023-09-15 16:31:08.292 -05:00 INF] Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX `IX_Brand_BrandName` ON `Brand` (`BrandName`);
+[2023-09-15 16:31:08.312 -05:00 INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX `IX_Category_CategoryName` ON `Category` (`CategoryName`);
+[2023-09-15 16:31:08.326 -05:00 INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX `IX_Product_IdBrand` ON `Product` (`IdBrand`);
+[2023-09-15 16:31:08.344 -05:00 INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX `IX_Product_IdCategory` ON `Product` (`IdCategory`);
+[2023-09-15 16:31:08.358 -05:00 INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX `IX_Product_ProductName` ON `Product` (`ProductName`);
+[2023-09-15 16:31:08.373 -05:00 INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX `IX_RefreshToken_UserId` ON `RefreshToken` (`UserId`);
+[2023-09-15 16:31:08.387 -05:00 INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX `IX_userRol_RolId` ON `userRol` (`RolId`);
+[2023-09-15 16:31:08.391 -05:00 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20230915213057_secondMigration', '7.0.10');
+[2023-09-15 17:01:10.996 -05:00 INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='jwtdemo' AND TABLE_NAME='__EFMigrationsHistory';
+[2023-09-15 17:01:11.044 -05:00 INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='jwtdemo' AND TABLE_NAME='__EFMigrationsHistory';
+[2023-09-15 17:01:11.074 -05:00 INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `MigrationId`, `ProductVersion`
+FROM `__EFMigrationsHistory`
+ORDER BY `MigrationId`;
+[2023-09-15 17:01:11.095 -05:00 INF] No migrations were applied. The database is already up to date.
+[2023-09-15 17:01:11.356 -05:00 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM `Brand` AS `b`)
+[2023-09-15 17:01:11.430 -05:00 ERR] Header with name 'BrandName'[0] was not found.
+Headers: 'Id', 'Nombre'
+Headers: 'Id', 'Nombre'
+If you are expecting some headers to be missing and want to ignore this validation, set the configuration HeaderValidated to null. You can also change the functionality to do something else, like logging the issue.
+
+IReader state:
+   ColumnCount: 0
+   CurrentIndex: -1
+   HeaderRecord:
+["Id","Nombre"]
+IParser state:
+   ByteCount: 0
+   CharCount: 11
+   Row: 1
+   RawRow: 1
+   Count: 2
+   RawRecord:
+Id,Nombre
+
+
+[2023-09-15 17:01:11.586 -05:00 INF] User profile is available. Using 'C:\Users\APT01-61\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+[2023-09-15 17:01:11.655 -05:00 INF] Now listening on: http://localhost:5258
+[2023-09-15 17:01:11.656 -05:00 INF] Application started. Press Ctrl+C to shut down.
+[2023-09-15 17:01:11.656 -05:00 INF] Hosting environment: Development
+[2023-09-15 17:01:11.656 -05:00 INF] Content root path: C:\Users\APT01-61\Documents\jwtToken\jwtdemo-app\ApiJwt
+[2023-09-15 17:06:50.683 -05:00 INF] Application is shutting down...
+[2023-09-15 17:06:56.873 -05:00 INF] Executed DbCommand (20ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='jwtdemo' AND TABLE_NAME='__EFMigrationsHistory';
+[2023-09-15 17:06:56.991 -05:00 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='jwtdemo' AND TABLE_NAME='__EFMigrationsHistory';
+[2023-09-15 17:06:57.033 -05:00 INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `MigrationId`, `ProductVersion`
+FROM `__EFMigrationsHistory`
+ORDER BY `MigrationId`;
+[2023-09-15 17:06:57.072 -05:00 INF] No migrations were applied. The database is already up to date.
+[2023-09-15 17:06:57.364 -05:00 INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM `Brand` AS `b`)
+[2023-09-15 17:06:57.623 -05:00 INF] Executed DbCommand (31ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 70), @p2='?' (DbType = Int32), @p3='?' (Size = 70), @p4='?' (DbType = Int32), @p5='?' (Size = 70), @p6='?' (DbType = Int32), @p7='?' (Size = 70), @p8='?' (DbType = Int32), @p9='?' (Size = 70), @p10='?' (DbType = Int32), @p11='?' (Size = 70), @p12='?' (DbType = Int32), @p13='?' (Size = 70), @p14='?' (DbType = Int32), @p15='?' (Size = 70)], CommandType='"Text"', CommandTimeout='30']
+SET AUTOCOMMIT = 1;
+INSERT INTO `Brand` (`Id`, `BrandName`)
+VALUES (@p0, @p1),
+(@p2, @p3),
+(@p4, @p5),
+(@p6, @p7),
+(@p8, @p9),
+(@p10, @p11),
+(@p12, @p13),
+(@p14, @p15);
+[2023-09-15 17:06:57.636 -05:00 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM `Category` AS `c`)
+[2023-09-15 17:06:57.640 -05:00 INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM `Product` AS `p`)
+[2023-09-15 17:06:57.662 -05:00 ERR] Header with name 'ProductName'[0] was not found.
+Header with name 'Price'[0] was not found.
+Header with name 'CreatedDate'[0] was not found.
+Header with name 'IdBrand'[0] was not found.
+Header with name 'IdCategory'[0] was not found.
+Header with name 'BrandName'[0] was not found.
+Header with name 'CategoryName'[0] was not found.
+Headers: 'Id', 'Nombre', 'Precio', 'FechaCreacion', 'MarcaId', 'CategoriaId'
+Headers: 'Id', 'Nombre', 'Precio', 'FechaCreacion', 'MarcaId', 'CategoriaId'
+Headers: 'Id', 'Nombre', 'Precio', 'FechaCreacion', 'MarcaId', 'CategoriaId'
+Headers: 'Id', 'Nombre', 'Precio', 'FechaCreacion', 'MarcaId', 'CategoriaId'
+Headers: 'Id', 'Nombre', 'Precio', 'FechaCreacion', 'MarcaId', 'CategoriaId'
+Headers: 'Id', 'Nombre', 'Precio', 'FechaCreacion', 'MarcaId', 'CategoriaId'
+If you are expecting some headers to be missing and want to ignore this validation, set the configuration HeaderValidated to null. You can also change the functionality to do something else, like logging the issue.
+
+IReader state:
+   ColumnCount: 0
+   CurrentIndex: -1
+   HeaderRecord:
+["Id","Nombre","Precio","FechaCreacion","MarcaId","CategoriaId"]
+IParser state:
+   ByteCount: 0
+   CharCount: 52
+   Row: 1
+   RawRow: 1
+   Count: 6
+   RawRecord:
+Id,Nombre,Precio,FechaCreacion,MarcaId,CategoriaId
+
+
+[2023-09-15 17:06:57.818 -05:00 INF] User profile is available. Using 'C:\Users\APT01-61\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+[2023-09-15 17:06:57.877 -05:00 INF] Now listening on: http://localhost:5258
+[2023-09-15 17:06:57.877 -05:00 INF] Application started. Press Ctrl+C to shut down.
+[2023-09-15 17:06:57.877 -05:00 INF] Hosting environment: Development
+[2023-09-15 17:06:57.877 -05:00 INF] Content root path: C:\Users\APT01-61\Documents\jwtToken\jwtdemo-app\ApiJwt
+[2023-09-15 17:09:21.963 -05:00 INF] Application is shutting down...
+[2023-09-15 17:09:27.547 -05:00 INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='jwtdemo' AND TABLE_NAME='__EFMigrationsHistory';
+[2023-09-15 17:09:27.589 -05:00 INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='jwtdemo' AND TABLE_NAME='__EFMigrationsHistory';
+[2023-09-15 17:09:27.613 -05:00 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `MigrationId`, `ProductVersion`
+FROM `__EFMigrationsHistory`
+ORDER BY `MigrationId`;
+[2023-09-15 17:09:27.628 -05:00 INF] No migrations were applied. The database is already up to date.
+[2023-09-15 17:09:27.775 -05:00 INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM `Brand` AS `b`)
+[2023-09-15 17:09:27.780 -05:00 INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM `Category` AS `c`)
+[2023-09-15 17:09:27.785 -05:00 INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM `Product` AS `p`)
+[2023-09-15 17:09:27.861 -05:00 ERR] Header with name 'ProductName'[0] was not found.
+Header with name 'CreatedDate'[0] was not found.
+Header with name 'BrandName'[0] was not found.
+Header with name 'CategoryName'[0] was not found.
+Headers: 'Id', 'Name', 'Price', 'Created', 'IdBrand', 'IdCategory'
+Headers: 'Id', 'Name', 'Price', 'Created', 'IdBrand', 'IdCategory'
+Headers: 'Id', 'Name', 'Price', 'Created', 'IdBrand', 'IdCategory'
+Headers: 'Id', 'Name', 'Price', 'Created', 'IdBrand', 'IdCategory'
+Headers: 'Id', 'Name', 'Price', 'Created', 'IdBrand', 'IdCategory'
+Headers: 'Id', 'Name', 'Price', 'Created', 'IdBrand', 'IdCategory'
+If you are expecting some headers to be missing and want to ignore this validation, set the configuration HeaderValidated to null. You can also change the functionality to do something else, like logging the issue.
+
+IReader state:
+   ColumnCount: 0
+   CurrentIndex: -1
+   HeaderRecord:
+["Id","Name","Price","Created","IdBrand","IdCategory"]
+IParser state:
+   ByteCount: 0
+   CharCount: 42
+   Row: 1
+   RawRow: 1
+   Count: 6
+   RawRecord:
+Id,Name,Price,Created,IdBrand,IdCategory
+
+
+[2023-09-15 17:09:27.939 -05:00 INF] User profile is available. Using 'C:\Users\APT01-61\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+[2023-09-15 17:09:27.984 -05:00 INF] Now listening on: http://localhost:5258
+[2023-09-15 17:09:27.985 -05:00 INF] Application started. Press Ctrl+C to shut down.
+[2023-09-15 17:09:27.985 -05:00 INF] Hosting environment: Development
+[2023-09-15 17:09:27.985 -05:00 INF] Content root path: C:\Users\APT01-61\Documents\jwtToken\jwtdemo-app\ApiJwt
+[2023-09-15 17:10:11.595 -05:00 INF] Application is shutting down...
+[2023-09-15 17:10:17.328 -05:00 INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='jwtdemo' AND TABLE_NAME='__EFMigrationsHistory';
+[2023-09-15 17:10:17.374 -05:00 INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='jwtdemo' AND TABLE_NAME='__EFMigrationsHistory';
+[2023-09-15 17:10:17.402 -05:00 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `MigrationId`, `ProductVersion`
+FROM `__EFMigrationsHistory`
+ORDER BY `MigrationId`;
+[2023-09-15 17:10:17.423 -05:00 INF] No migrations were applied. The database is already up to date.
+[2023-09-15 17:10:17.571 -05:00 INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM `Brand` AS `b`)
+[2023-09-15 17:10:17.576 -05:00 INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM `Category` AS `c`)
+[2023-09-15 17:10:17.581 -05:00 INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM `Product` AS `p`)
+[2023-09-15 17:10:17.659 -05:00 ERR] Header with name 'BrandName'[0] was not found.
+Header with name 'CategoryName'[0] was not found.
+Headers: 'Id', 'ProductName', 'Price', 'CreatedDate', 'IdBrand', 'IdCategory'
+Headers: 'Id', 'ProductName', 'Price', 'CreatedDate', 'IdBrand', 'IdCategory'
+Headers: 'Id', 'ProductName', 'Price', 'CreatedDate', 'IdBrand', 'IdCategory'
+Headers: 'Id', 'ProductName', 'Price', 'CreatedDate', 'IdBrand', 'IdCategory'
+Headers: 'Id', 'ProductName', 'Price', 'CreatedDate', 'IdBrand', 'IdCategory'
+Headers: 'Id', 'ProductName', 'Price', 'CreatedDate', 'IdBrand', 'IdCategory'
+If you are expecting some headers to be missing and want to ignore this validation, set the configuration HeaderValidated to null. You can also change the functionality to do something else, like logging the issue.
+
+IReader state:
+   ColumnCount: 0
+   CurrentIndex: -1
+   HeaderRecord:
+["Id","ProductName","Price","CreatedDate","IdBrand","IdCategory"]
+IParser state:
+   ByteCount: 0
+   CharCount: 53
+   Row: 1
+   RawRow: 1
+   Count: 6
+   RawRecord:
+Id,ProductName,Price,CreatedDate,IdBrand,IdCategory
+
+
+[2023-09-15 17:10:17.730 -05:00 INF] User profile is available. Using 'C:\Users\APT01-61\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+[2023-09-15 17:10:17.778 -05:00 INF] Now listening on: http://localhost:5258
+[2023-09-15 17:10:17.778 -05:00 INF] Application started. Press Ctrl+C to shut down.
+[2023-09-15 17:10:17.779 -05:00 INF] Hosting environment: Development
+[2023-09-15 17:10:17.779 -05:00 INF] Content root path: C:\Users\APT01-61\Documents\jwtToken\jwtdemo-app\ApiJwt
+[2023-09-15 17:11:15.531 -05:00 INF] Application is shutting down...
+[2023-09-15 17:11:20.671 -05:00 INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='jwtdemo' AND TABLE_NAME='__EFMigrationsHistory';
+[2023-09-15 17:11:20.713 -05:00 INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='jwtdemo' AND TABLE_NAME='__EFMigrationsHistory';
+[2023-09-15 17:11:20.746 -05:00 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT `MigrationId`, `ProductVersion`
+FROM `__EFMigrationsHistory`
+ORDER BY `MigrationId`;
+[2023-09-15 17:11:20.766 -05:00 INF] No migrations were applied. The database is already up to date.
+[2023-09-15 17:11:20.950 -05:00 INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM `Brand` AS `b`)
+[2023-09-15 17:11:20.957 -05:00 INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM `Category` AS `c`)
+[2023-09-15 17:11:20.962 -05:00 INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM `Product` AS `p`)
+[2023-09-15 17:11:21.047 -05:00 ERR] Header with name 'IdBrand'[0] was not found.
+Header with name 'IdCategory'[0] was not found.
+Headers: 'Id', 'ProductName', 'Price', 'CreatedDate', 'BrandName', 'CategoryName'
+Headers: 'Id', 'ProductName', 'Price', 'CreatedDate', 'BrandName', 'CategoryName'
+Headers: 'Id', 'ProductName', 'Price', 'CreatedDate', 'BrandName', 'CategoryName'
+Headers: 'Id', 'ProductName', 'Price', 'CreatedDate', 'BrandName', 'CategoryName'
+Headers: 'Id', 'ProductName', 'Price', 'CreatedDate', 'BrandName', 'CategoryName'
+Headers: 'Id', 'ProductName', 'Price', 'CreatedDate', 'BrandName', 'CategoryName'
+If you are expecting some headers to be missing and want to ignore this validation, set the configuration HeaderValidated to null. You can also change the functionality to do something else, like logging the issue.
+
+IReader state:
+   ColumnCount: 0
+   CurrentIndex: -1
+   HeaderRecord:
+["Id","ProductName","Price","CreatedDate","BrandName","CategoryName"]
+IParser state:
+   ByteCount: 0
+   CharCount: 57
+   Row: 1
+   RawRow: 1
+   Count: 6
+   RawRecord:
+Id,ProductName,Price,CreatedDate,BrandName,CategoryName
+
+
+[2023-09-15 17:11:21.126 -05:00 INF] User profile is available. Using 'C:\Users\APT01-61\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+[2023-09-15 17:11:21.169 -05:00 INF] Now listening on: http://localhost:5258
+[2023-09-15 17:11:21.170 -05:00 INF] Application started. Press Ctrl+C to shut down.
+[2023-09-15 17:11:21.170 -05:00 INF] Hosting environment: Development
+[2023-09-15 17:11:21.170 -05:00 INF] Content root path: C:\Users\APT01-61\Documents\jwtToken\jwtdemo-app\ApiJwt
